@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from app.database.database import engine
+from app.database.base import Base
+from app.database.database import engine
 
 app = FastAPI()
+Base.metadata.create_all(bind=engine)
 
 @app.get("/")
 def health_check():
