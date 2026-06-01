@@ -1,5 +1,15 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+
+
 const LoginForm = () => {
+
+  const navigate = useNavigate();
+
+  const { login } = useContext(AuthContext);
+
+  const [error, setError] = useState("");
 
     const [formData, setFormData] = useState({
     email: "",
@@ -14,10 +24,21 @@ const LoginForm = () => {
             [name]: value
         }))
     }
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
   e.preventDefault();
 
-  console.log(formData);
+  try {
+    setError("");
+
+    await login(formData);
+
+    navigate("/dashboard");
+  } catch (error) {
+    setError(
+      error?.response?.data?.detail ||
+      "Login failed"
+    );
+  }
 };
 
 
@@ -68,6 +89,11 @@ const LoginForm = () => {
             className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500"
           />
         </div>
+        {error && (
+          <p className="text-sm text-red-500">
+            {error}
+          </p>
+        )}
 
         <button
           type="submit"
