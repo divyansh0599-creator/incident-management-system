@@ -1,6 +1,24 @@
+import { useContext } from "react";
+import { Navigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 import LoginForm from "../../components/auth/LoginForm";
 
 const Login = () => {
+
+const { isAuthenticated, loading } =
+  useContext(AuthContext);
+
+  if (loading) {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      Loading...
+    </div>
+  );
+}
+if (isAuthenticated) {
+  return <Navigate to="/dashboard" replace />;
+}
+
   return (
     <div className="flex min-h-screen">
       <div className="flex w-3/5 items-center justify-center bg-gray-900 px-12 text-white">
