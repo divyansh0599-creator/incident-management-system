@@ -5,3 +5,12 @@ export const getIncidents = async () => {
 
   return response.data;
 };
+
+export const createIncident = async (incidentData) => {
+  const response = await api.post(
+    "/incidents",
+    incidentData
+  );
+
+  return response.data;
+};

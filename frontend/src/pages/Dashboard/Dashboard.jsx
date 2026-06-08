@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { getIncidents } from "../../services/incidentService";
+import CreateIncidentModal from "../../components/Incidents/CreateIncidentModal";
 
 const Dashboard = () => {
   const { user, logout } = useContext(AuthContext);
@@ -10,25 +11,27 @@ const Dashboard = () => {
 
   const [incidents, setIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] =
+  useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
 
-  useEffect(() => {
-  const fetchIncidents = async () => {
-    try {
-      const data = await getIncidents();
+ const fetchIncidents = async () => {
+  try {
+    const data = await getIncidents();
 
-      setIncidents(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setIncidents(data);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
+useEffect(() => {
   fetchIncidents();
 }, []);
 
@@ -47,6 +50,13 @@ const Dashboard = () => {
             Welcome back, {user?.first_name} {user?.last_name}
           </p>
         </div>
+        <div className="flex gap-3">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+        >
+          Create Incident
+        </button>
 
         <button
           onClick={handleLogout}
@@ -54,6 +64,7 @@ const Dashboard = () => {
         >
           Logout
         </button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -197,6 +208,13 @@ const Dashboard = () => {
 
       </div>
     </div>
+    <CreateIncidentModal
+  isOpen={isModalOpen}
+  onClose={() =>
+    setIsModalOpen(false)
+  }
+  onSuccess={fetchIncidents}
+/>
   </div>
 );
 };
