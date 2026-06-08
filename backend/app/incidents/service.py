@@ -23,3 +23,12 @@ def create_incident(
     db.refresh(incident)
 
     return incident
+
+def get_all_incidents(
+    db: Session,
+):
+    return (
+        db.query(Incident)
+        .order_by(Incident.created_at.desc())
+        .all()
+    )

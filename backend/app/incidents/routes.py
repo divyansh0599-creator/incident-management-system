@@ -9,8 +9,11 @@ from app.schemas.incident import (
     IncidentCreate,
     IncidentResponse,
 )
+from app.incidents.service import (
+    create_incident,
+    get_all_incidents,
+)
 
-from app.incidents.service import create_incident
 
 router = APIRouter(
     prefix="/incidents",
@@ -31,3 +34,13 @@ def create_incident_route(
         incident_data,
         current_user.id,
     )
+
+@router.get(
+    "",
+    response_model=list[IncidentResponse],
+)
+def get_incidents(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return get_all_incidents(db)
