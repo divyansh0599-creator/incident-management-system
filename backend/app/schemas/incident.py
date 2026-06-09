@@ -22,3 +22,6 @@ class IncidentResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class IncidentStatusUpdate(BaseModel):
+    status: StatusEnum

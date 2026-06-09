@@ -14,3 +14,27 @@ export const createIncident = async (incidentData) => {
 
   return response.data;
 };
+
+export const getIncidentById = async (
+  incidentId
+) => {
+  const response = await api.get(
+    `/incidents/${incidentId}`
+  );
+
+  return response.data;
+};
+
+export const updateIncidentStatus = async (
+  incidentId,
+  status
+) => {
+  const response = await api.patch(
+    `/incidents/${incidentId}/status`,
+    {
+      status,
+    }
+  );
+
+  return response.data;
+};

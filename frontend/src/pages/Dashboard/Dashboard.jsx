@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { getIncidents } from "../../services/incidentService";
 import CreateIncidentModal from "../../components/Incidents/CreateIncidentModal";
+import IncidentDetailsModal from "../../components/Incidents/IncidentDetailsModal";
 
 const Dashboard = () => {
   const { user, logout } = useContext(AuthContext);
@@ -13,11 +14,24 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] =
   useState(false);
+  const [selectedIncidentId, setSelectedIncidentId] =
+  useState(null);
+
+const [isDetailsOpen, setIsDetailsOpen] =
+  useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
+
+  const handleIncidentClick = (
+  incidentId
+) => {
+  setSelectedIncidentId(incidentId);
+
+  setIsDetailsOpen(true);
+};
 
  const fetchIncidents = async () => {
   try {
@@ -181,7 +195,12 @@ useEffect(() => {
                   {incidents.map((incident) => (
                     <tr
                       key={incident.id}
-                      className="border-b hover:bg-slate-50"
+                      onClick={() =>
+                        handleIncidentClick(
+                          incident.id
+                        )
+                      }
+                      className="cursor-pointer border-b hover:bg-slate-50"
                     >
                       <td className="py-4">
                         {incident.title}
@@ -209,12 +228,21 @@ useEffect(() => {
       </div>
     </div>
     <CreateIncidentModal
-  isOpen={isModalOpen}
-  onClose={() =>
-    setIsModalOpen(false)
-  }
-  onSuccess={fetchIncidents}
-/>
+      isOpen={isModalOpen}
+      onClose={() =>
+        setIsModalOpen(false)
+      }
+      onSuccess={fetchIncidents}
+    />
+    <IncidentDetailsModal
+      isOpen={isDetailsOpen}
+      incidentId={selectedIncidentId}
+      onClose={() => {
+        setIsDetailsOpen(false);
+        setSelectedIncidentId(null);
+      }}
+      onSuccess={fetchIncidents}
+    />
   </div>
 );
 };

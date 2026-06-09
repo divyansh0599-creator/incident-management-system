@@ -8,10 +8,13 @@ from app.models.user import User
 from app.schemas.incident import (
     IncidentCreate,
     IncidentResponse,
+    IncidentStatusUpdate,
 )
 from app.incidents.service import (
     create_incident,
     get_all_incidents,
+    get_incident_by_id,
+    update_incident_status,
 )
 
 
@@ -44,3 +47,49 @@ def get_incidents(
     current_user: User = Depends(get_current_user),
 ):
     return get_all_incidents(db)
+
+@router.get(
+    "/{incident_id}",
+    response_model=IncidentResponse,
+)
+def get_incident(
+    incident_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    incident = get_incident_by_id(
+        db,
+        incident_id,
+    )
+
+    if not incident:
+        raise HTTPException(
+            status_code=404,
+            detail="Incident not found",
+        )
+
+    return incident
+
+@router.patch(
+    "/{incident_id}/status",
+    response_model=IncidentResponse,
+)
+def update_status(
+    incident_id: int,
+    status_data: IncidentStatusUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    incident = update_incident_status(
+        db,
+        incident_id,
+        status_data.status,
+    )
+
+    if not incident:
+        raise HTTPException(
+            status_code=404,
+            detail="Incident not found",
+        )
+
+    return incident
