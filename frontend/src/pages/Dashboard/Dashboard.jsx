@@ -101,7 +101,7 @@ useEffect(() => {
           <h2 className="mt-2 text-4xl font-bold text-red-500">
             {
               incidents.filter(
-                (i) => i.status === "OPEN"
+                (i) => i.status === "Open"
               ).length
             }
           </h2>
@@ -115,7 +115,7 @@ useEffect(() => {
           <h2 className="mt-2 text-4xl font-bold text-green-500">
             {
               incidents.filter(
-                (i) => i.status === "RESOLVED"
+                (i) => i.status === "Resolved"
               ).length
             }
           </h2>
@@ -195,11 +195,22 @@ useEffect(() => {
                   {incidents.map((incident) => (
                     <tr
                       key={incident.id}
+                      tabIndex={0}
                       onClick={() =>
                         handleIncidentClick(
                           incident.id
                         )
                       }
+                      onKeyDown={(e) => {
+                        if (
+                          e.key === "Enter" ||
+                          e.key === " "
+                        ) {
+                          handleIncidentClick(
+                            incident.id
+                          );
+                        }
+                      }}
                       className="cursor-pointer border-b hover:bg-slate-50"
                     >
                       <td className="py-4">

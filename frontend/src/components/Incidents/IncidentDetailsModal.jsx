@@ -20,31 +20,65 @@ const [status, setStatus] =
 const [loading, setLoading] =
   useState(false);
 
+const [fetching, setFetching] =
+  useState(false);
+
+const [error, setError] =
+  useState("");
+
   useEffect(() => {
-  if (!incidentId) return;
+  if (!isOpen || !incidentId) {
+    setIncident(null);
+    setStatus("");
+    setError("");
+    return;
+  }
+
+  let isMounted = true;
 
   const fetchIncident = async () => {
     try {
+      setFetching(true);
+      setError("");
+      setIncident(null);
+
       const data =
         await getIncidentById(
           incidentId
         );
+
+      if (!isMounted) return;
 
       setIncident(data);
 
       setStatus(data.status);
     } catch (error) {
       console.error(error);
+      if (isMounted) {
+        setError(
+          error?.response?.data?.detail ||
+          "Failed to load incident details"
+        );
+      }
+    } finally {
+      if (isMounted) {
+        setFetching(false);
+      }
     }
   };
 
   fetchIncident();
-}, [incidentId]);
+
+  return () => {
+    isMounted = false;
+  };
+}, [isOpen, incidentId]);
  if (!isOpen) return null;
 
 const handleSave = async () => {
   try {
     setLoading(true);
+    setError("");
 
     await updateIncidentStatus(
       incidentId,
@@ -56,6 +90,10 @@ const handleSave = async () => {
     onClose();
   } catch (error) {
     console.error(error);
+    setError(
+      error?.response?.data?.detail ||
+      "Failed to update incident status"
+    );
   } finally {
     setLoading(false);
   }
@@ -79,8 +117,14 @@ const handleSave = async () => {
     </button>
   </div>
 
-  {!incident ? (
+  {fetching ? (
     <p>Loading...</p>
+  ) : error ? (
+    <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
+      {error}
+    </p>
+  ) : !incident ? (
+    <p>No incident selected.</p>
   ) : (
     <div className="space-y-5">
 
@@ -156,7 +200,7 @@ const handleSave = async () => {
 
         <button
           onClick={handleSave}
-          disabled={loading}
+          disabled={loading || status === incident.status}
           className="rounded-lg bg-blue-600 px-5 py-2 text-white hover:bg-blue-700"
         >
           {loading

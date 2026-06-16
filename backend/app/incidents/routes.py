@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database.database import get_db
@@ -6,6 +6,7 @@ from app.auth.dependencies import get_current_user
 from app.models.user import User
 
 from app.schemas.incident import (
+    IncidentAssignRequest,
     IncidentCreate,
     IncidentResponse,
     IncidentStatusUpdate,
@@ -15,6 +16,7 @@ from app.incidents.service import (
     get_all_incidents,
     get_incident_by_id,
     update_incident_status,
+    assign_incident,
 )
 
 
@@ -90,6 +92,30 @@ def update_status(
         raise HTTPException(
             status_code=404,
             detail="Incident not found",
+        )
+
+    return incident
+
+@router.patch(
+    "/{incident_id}/assign",
+    response_model=IncidentResponse,
+)
+def assign_incident_route(
+    incident_id: int,
+    assign_data: IncidentAssignRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    incident = assign_incident(
+        db,
+        incident_id,
+        assign_data.assigned_to_id,
+    )
+
+    if not incident:
+        raise HTTPException(
+            status_code=404,
+            detail="Incident or user not found",
         )
 
     return incident

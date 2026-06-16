@@ -63,3 +63,12 @@ def authenticate_user(
         "access_token": access_token,
         "token_type": "bearer",
     }
+
+def get_all_users(
+    db: Session,
+):
+    return (
+        db.query(User)
+        .order_by(User.first_name)
+        .all()
+    )

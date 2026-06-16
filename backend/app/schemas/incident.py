@@ -25,3 +25,6 @@ class IncidentResponse(BaseModel):
 
 class IncidentStatusUpdate(BaseModel):
     status: StatusEnum
+
+class IncidentAssignRequest(BaseModel):
+    assigned_to_id: int

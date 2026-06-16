@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database.database import get_db
-from app.auth.services import create_user, authenticate_user
+from app.auth.services import create_user, authenticate_user, get_all_users
 from app.schemas.user import (
     UserCreate,
+    UserListResponse,
     UserResponse,
     UserLogin,
     Token,
@@ -79,3 +80,13 @@ def test_token(
         "message": "Token is valid",
         "user": current_user.email,
     }
+
+@router.get(
+    "/users",
+    response_model=list[UserListResponse],
+)
+def get_users(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return get_all_users(db)
