@@ -38,3 +38,15 @@ export const updateIncidentStatus = async (
 
   return response.data;
 };
+
+export const updateIncident = async (
+  incidentId,
+  incidentData
+) => {
+  const response = await api.patch(
+    `/incidents/${incidentId}`,
+    incidentData
+  );
+
+  return response.data;
+};

@@ -46,10 +46,12 @@ def get_incident_by_id(
         .first()
     )
 
-def update_incident_status(
+
+def update_incident(
     db: Session,
     incident_id: int,
     status: StatusEnum,
+    assigned_to_id: int | None,
 ):
     incident = (
         db.query(Incident)
@@ -63,44 +65,9 @@ def update_incident_status(
         return None
 
     incident.status = status
-
-    db.commit()
-
-    db.refresh(incident)
-
-    return incident
-
-def assign_incident(
-    db: Session,
-    incident_id: int,
-    assigned_to_id: int,
-):
-    incident = (
-        db.query(Incident)
-        .filter(
-            Incident.id == incident_id
-        )
-        .first()
-    )
-
-    if not incident:
-        return None
-
-    assigned_user = (
-        db.query(User)
-        .filter(
-            User.id == assigned_to_id
-        )
-        .first()
-    )
-
-    if not assigned_user:
-        return None
-
     incident.assigned_to_id = assigned_to_id
 
     db.commit()
-
     db.refresh(incident)
 
     return incident

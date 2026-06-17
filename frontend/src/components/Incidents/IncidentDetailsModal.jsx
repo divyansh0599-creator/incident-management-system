@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 
 import {
   getIncidentById,
-  updateIncidentStatus,
+  updateIncident,
 } from "../../services/incidentService";
+import { getUsers } from "../../services/userService";
 
 const IncidentDetailsModal = ({
   isOpen,
@@ -24,6 +25,12 @@ const [fetching, setFetching] =
   useState(false);
 
 const [error, setError] =
+  useState("");
+
+const [users, setUsers] =
+  useState([]);
+
+const [assignedToId, setAssignedToId] =
   useState("");
 
   useEffect(() => {
@@ -52,6 +59,9 @@ const [error, setError] =
       setIncident(data);
 
       setStatus(data.status);
+      setAssignedToId(
+        data.assigned_to_id || ""
+    );
     } catch (error) {
       console.error(error);
       if (isMounted) {
@@ -73,6 +83,20 @@ const [error, setError] =
     isMounted = false;
   };
 }, [isOpen, incidentId]);
+useEffect(() => {
+  const fetchUsers = async () => {
+    try {
+      const data =
+        await getUsers();
+
+      setUsers(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchUsers();
+}, []);
  if (!isOpen) return null;
 
 const handleSave = async () => {
@@ -80,10 +104,14 @@ const handleSave = async () => {
     setLoading(true);
     setError("");
 
-    await updateIncidentStatus(
-      incidentId,
-      status
-    );
+    await updateIncident(
+  incidentId,
+  {
+    status,
+    assigned_to_id:
+      assignedToId || null,
+  }
+);
 
     await onSuccess();
 
@@ -189,6 +217,35 @@ const handleSave = async () => {
           </option>
         </select>
       </div>
+      <div>
+  <label className="mb-2 block text-sm text-gray-500">
+    Assigned To
+  </label>
+
+  <select
+    value={assignedToId}
+    onChange={(e) =>
+      setAssignedToId(
+        e.target.value
+      )
+    }
+    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+  >
+    <option value="">
+      Unassigned
+    </option>
+
+    {users.map((user) => (
+      <option
+        key={user.id}
+        value={user.id}
+      >
+        {user.first_name}{" "}
+        {user.last_name}
+      </option>
+    ))}
+  </select>
+</div>
 
       <div className="flex justify-end gap-3">
         <button
@@ -200,7 +257,7 @@ const handleSave = async () => {
 
         <button
           onClick={handleSave}
-          disabled={loading || status === incident.status}
+          disabled={loading}
           className="rounded-lg bg-blue-600 px-5 py-2 text-white hover:bg-blue-700"
         >
           {loading

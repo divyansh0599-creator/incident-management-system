@@ -23,8 +23,6 @@ class IncidentResponse(BaseModel):
     class Config:
         from_attributes = True
 
-class IncidentStatusUpdate(BaseModel):
+class IncidentUpdate(BaseModel):
     status: StatusEnum
-
-class IncidentAssignRequest(BaseModel):
-    assigned_to_id: int
+    assigned_to_id: int | None = None

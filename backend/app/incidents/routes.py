@@ -6,17 +6,15 @@ from app.auth.dependencies import get_current_user
 from app.models.user import User
 
 from app.schemas.incident import (
-    IncidentAssignRequest,
     IncidentCreate,
     IncidentResponse,
-    IncidentStatusUpdate,
+    IncidentUpdate,
 )
 from app.incidents.service import (
     create_incident,
     get_all_incidents,
     get_incident_by_id,
-    update_incident_status,
-    assign_incident,
+    update_incident,
 )
 
 
@@ -73,49 +71,26 @@ def get_incident(
     return incident
 
 @router.patch(
-    "/{incident_id}/status",
+    "/{incident_id}",
     response_model=IncidentResponse,
 )
-def update_status(
+def update_incident_route(
     incident_id: int,
-    status_data: IncidentStatusUpdate,
+    update_data: IncidentUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    incident = update_incident_status(
+    incident = update_incident(
         db,
         incident_id,
-        status_data.status,
+        update_data.status,
+        update_data.assigned_to_id,
     )
 
     if not incident:
         raise HTTPException(
             status_code=404,
             detail="Incident not found",
-        )
-
-    return incident
-
-@router.patch(
-    "/{incident_id}/assign",
-    response_model=IncidentResponse,
-)
-def assign_incident_route(
-    incident_id: int,
-    assign_data: IncidentAssignRequest,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    incident = assign_incident(
-        db,
-        incident_id,
-        assign_data.assigned_to_id,
-    )
-
-    if not incident:
-        raise HTTPException(
-            status_code=404,
-            detail="Incident or user not found",
         )
 
     return incident
