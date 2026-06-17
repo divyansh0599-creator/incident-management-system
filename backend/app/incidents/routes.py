@@ -85,6 +85,7 @@ def update_incident_route(
         incident_id,
         update_data.status,
         update_data.assigned_to_id,
+        current_user
     )
 
     if not incident:

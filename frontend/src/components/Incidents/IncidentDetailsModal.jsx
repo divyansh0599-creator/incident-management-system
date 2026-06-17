@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useContext} from "react";
 
 import {
   getIncidentById,
   updateIncident,
 } from "../../services/incidentService";
 import { getUsers } from "../../services/userService";
+import { AuthContext } from "../../context/AuthContext";
 
 const IncidentDetailsModal = ({
   isOpen,
@@ -32,6 +33,10 @@ const [users, setUsers] =
 
 const [assignedToId, setAssignedToId] =
   useState("");
+
+  const { user } =
+  useContext(AuthContext);
+
 
   useEffect(() => {
   if (!isOpen || !incidentId) {
@@ -83,11 +88,18 @@ const [assignedToId, setAssignedToId] =
     isMounted = false;
   };
 }, [isOpen, incidentId]);
+
 useEffect(() => {
+  if (
+    user?.role !== "Admin" &&
+    user?.role !== "Manager"
+  ) {
+    return;
+  }
+
   const fetchUsers = async () => {
     try {
-      const data =
-        await getUsers();
+      const data = await getUsers();
 
       setUsers(data);
     } catch (error) {
@@ -96,7 +108,8 @@ useEffect(() => {
   };
 
   fetchUsers();
-}, []);
+}, [user]);
+
  if (!isOpen) return null;
 
 const handleSave = async () => {
@@ -217,35 +230,41 @@ const handleSave = async () => {
           </option>
         </select>
       </div>
-      <div>
-  <label className="mb-2 block text-sm text-gray-500">
-    Assigned To
-  </label>
+      {(
+  user?.role === "Admin" ||
+  user?.role === "Manager"
+) && (
+  <div>
+    <label className="mb-2 block text-sm text-gray-500">
+      Assigned To
+    </label>
 
-  <select
-    value={assignedToId}
-    onChange={(e) =>
-      setAssignedToId(
-        e.target.value
-      )
-    }
-    className="w-full rounded-lg border border-gray-300 px-4 py-3"
-  >
-    <option value="">
-      Unassigned
-    </option>
-
-    {users.map((user) => (
-      <option
-        key={user.id}
-        value={user.id}
-      >
-        {user.first_name}{" "}
-        {user.last_name}
+    <select
+      value={assignedToId}
+      onChange={(e) =>
+        setAssignedToId(
+          e.target.value
+            ? Number(e.target.value)
+            : ""
+        )
+      }
+      className="w-full rounded-lg border border-gray-300 px-4 py-3"
+    >
+      <option value="">
+        Unassigned
       </option>
-    ))}
-  </select>
-</div>
+
+      {users.map((user) => (
+        <option
+          key={user.id}
+          value={user.id}
+        >
+          {user.first_name} {user.last_name}
+        </option>
+      ))}
+    </select>
+  </div>
+)}
 
       <div className="flex justify-end gap-3">
         <button

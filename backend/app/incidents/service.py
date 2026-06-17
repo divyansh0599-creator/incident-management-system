@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from app.models.user import User
 from sqlalchemy.orm import Session
 
@@ -52,6 +53,7 @@ def update_incident(
     incident_id: int,
     status: StatusEnum,
     assigned_to_id: int | None,
+    current_user: User,
 ):
     incident = (
         db.query(Incident)
@@ -64,8 +66,21 @@ def update_incident(
     if not incident:
         return None
 
+    # Everyone can update status
     incident.status = status
-    incident.assigned_to_id = assigned_to_id
+
+    # Only Admin/Manager can assign incidents
+    if assigned_to_id is not None:
+        if current_user.role not in [
+            "Admin",
+            "Manager",
+        ]:
+            raise HTTPException(
+                status_code=403,
+                detail="You cannot assign incidents",
+            )
+
+        incident.assigned_to_id = assigned_to_id
 
     db.commit()
     db.refresh(incident)

@@ -56,6 +56,7 @@ def authenticate_user(
     access_token = create_access_token(
         {
             "sub": user.email,
+            "role": user.role,
         }
     )
 

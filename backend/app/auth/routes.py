@@ -1,3 +1,4 @@
+from app.auth.permissions import require_admin_or_manager
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -87,6 +88,8 @@ def test_token(
 )
 def get_users(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(
+        require_admin_or_manager
+    ),
 ):
     return get_all_users(db)
