@@ -27,6 +27,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
+    relationship,
 )
 
 from app.database.base import Base
@@ -68,6 +69,11 @@ class Incident(Base):
     assigned_to_id: Mapped[int | None] = mapped_column(
         ForeignKey("users.id"),
         nullable=True,
+    )
+
+    assigned_to = relationship(
+        "User",
+        foreign_keys=[assigned_to_id],
     )
 
     created_at: Mapped[datetime] = mapped_column(

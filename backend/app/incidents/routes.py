@@ -83,8 +83,7 @@ def update_incident_route(
     incident = update_incident(
         db,
         incident_id,
-        update_data.status,
-        update_data.assigned_to_id,
+        update_data,
         current_user
     )
 

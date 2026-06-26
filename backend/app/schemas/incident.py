@@ -10,6 +10,15 @@ class IncidentCreate(BaseModel):
     description: str
     priority: PriorityEnum
 
+class AssignedUserResponse(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    email: str
+
+    class Config:
+        from_attributes = True
+
 class IncidentResponse(BaseModel):
     id: int
     title: str
@@ -19,6 +28,7 @@ class IncidentResponse(BaseModel):
 
     created_by_id: int
     assigned_to_id: int | None
+    assigned_to: AssignedUserResponse | None = None
 
     class Config:
         from_attributes = True

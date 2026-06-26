@@ -37,6 +37,10 @@ const [assignedToId, setAssignedToId] =
   const { user } =
   useContext(AuthContext);
 
+  const canManageAssignment =
+    user?.role === "Admin" ||
+    user?.role === "Manager";
+
 
   useEffect(() => {
   if (!isOpen || !incidentId) {
@@ -90,10 +94,7 @@ const [assignedToId, setAssignedToId] =
 }, [isOpen, incidentId]);
 
 useEffect(() => {
-  if (
-    user?.role !== "Admin" &&
-    user?.role !== "Manager"
-  ) {
+  if (!canManageAssignment) {
     return;
   }
 
@@ -108,32 +109,50 @@ useEffect(() => {
   };
 
   fetchUsers();
-}, [user]);
+}, [canManageAssignment]);
 
  if (!isOpen) return null;
+
+const selectedUser = users.find(
+  (user) =>
+    String(user.id) === String(assignedToId)
+);
+
+const assignedUser = selectedUser ||
+  incident?.assigned_to;
+
+const assignedUserName = assignedUser
+  ? `${assignedUser.first_name} ${assignedUser.last_name}`
+  : "Unassigned";
 
 const handleSave = async () => {
   try {
     setLoading(true);
     setError("");
 
+    const payload = {
+      status,
+    };
+
+    if (canManageAssignment) {
+      payload.assigned_to_id =
+        assignedToId || null;
+    }
+
     await updateIncident(
-  incidentId,
-  {
-    status,
-    assigned_to_id:
-      assignedToId || null,
-  }
-);
+      incidentId,
+      payload
+    );
 
     await onSuccess();
 
     onClose();
   } catch (error) {
     console.error(error);
+
     setError(
       error?.response?.data?.detail ||
-      "Failed to update incident status"
+      "Failed to update incident"
     );
   } finally {
     setLoading(false);
@@ -230,13 +249,21 @@ const handleSave = async () => {
           </option>
         </select>
       </div>
-      {(
-  user?.role === "Admin" ||
-  user?.role === "Manager"
-) && (
+
+      <div>
+        <label className="mb-1 block text-sm text-gray-500">
+          Assigned To
+        </label>
+
+        <p className="font-medium">
+          {assignedUserName}
+        </p>
+      </div>
+
+      {canManageAssignment && (
   <div>
     <label className="mb-2 block text-sm text-gray-500">
-      Assigned To
+      Update Assignment
     </label>
 
     <select

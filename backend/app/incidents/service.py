@@ -2,8 +2,8 @@ from fastapi import HTTPException
 from app.models.user import User
 from sqlalchemy.orm import Session
 
-from app.models.incident import Incident,StatusEnum
-from app.schemas.incident import IncidentCreate
+from app.models.incident import Incident
+from app.schemas.incident import IncidentCreate, IncidentUpdate
 
 
 def create_incident(
@@ -51,8 +51,7 @@ def get_incident_by_id(
 def update_incident(
     db: Session,
     incident_id: int,
-    status: StatusEnum,
-    assigned_to_id: int | None,
+    update_data: IncidentUpdate,
     current_user: User,
 ):
     incident = (
@@ -67,10 +66,10 @@ def update_incident(
         return None
 
     # Everyone can update status
-    incident.status = status
+    incident.status = update_data.status
 
     # Only Admin/Manager can assign incidents
-    if assigned_to_id is not None:
+    if "assigned_to_id" in update_data.model_fields_set:
         if current_user.role not in [
             "Admin",
             "Manager",
@@ -80,7 +79,7 @@ def update_incident(
                 detail="You cannot assign incidents",
             )
 
-        incident.assigned_to_id = assigned_to_id
+        incident.assigned_to_id = update_data.assigned_to_id
 
     db.commit()
     db.refresh(incident)
