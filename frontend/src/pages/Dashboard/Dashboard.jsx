@@ -50,13 +50,13 @@ useEffect(() => {
 }, []);
 
   return (
-  <div className="min-h-screen bg-slate-100 p-8">
-    <div className="mx-auto max-w-7xl space-y-6">
+  <div className="min-h-screen bg-slate-100 p-4 sm:p-6 lg:p-8">
+    <div className="mx-auto max-w-7xl space-y-5 sm:space-y-6">
 
       {/* Header */}
-      <div className="flex items-center justify-between rounded-2xl bg-white p-6 shadow-sm">
+      <div className="flex flex-col gap-4 rounded-lg bg-white p-4 shadow-sm sm:p-6 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">
+          <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">
             Incident Management Dashboard
           </h1>
 
@@ -64,17 +64,17 @@ useEffect(() => {
             Welcome back, {user?.first_name} {user?.last_name}
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+          className="w-full rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 sm:w-auto"
         >
           Create Incident
         </button>
 
         <button
           onClick={handleLogout}
-          className="rounded-lg bg-red-500 px-5 py-2 text-white transition hover:bg-red-600"
+          className="w-full rounded-lg bg-red-500 px-5 py-2 text-white transition hover:bg-red-600 sm:w-auto"
         >
           Logout
         </button>
@@ -82,23 +82,23 @@ useEffect(() => {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-6 md:grid-cols-3">
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+        <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
           <p className="text-sm text-slate-500">
             Total Incidents
           </p>
 
-          <h2 className="mt-2 text-4xl font-bold text-blue-600">
+          <h2 className="mt-2 text-3xl font-bold text-blue-600 sm:text-4xl">
             {incidents.length}
           </h2>
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
+        <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
           <p className="text-sm text-slate-500">
             Open Incidents
           </p>
 
-          <h2 className="mt-2 text-4xl font-bold text-red-500">
+          <h2 className="mt-2 text-3xl font-bold text-red-500 sm:text-4xl">
             {
               incidents.filter(
                 (i) => i.status === "Open"
@@ -107,12 +107,12 @@ useEffect(() => {
           </h2>
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
+        <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
           <p className="text-sm text-slate-500">
             Resolved Incidents
           </p>
 
-          <h2 className="mt-2 text-4xl font-bold text-green-500">
+          <h2 className="mt-2 text-3xl font-bold text-green-500 sm:text-4xl">
             {
               incidents.filter(
                 (i) => i.status === "Resolved"
@@ -126,7 +126,7 @@ useEffect(() => {
       <div className="grid gap-6 lg:grid-cols-3">
 
         {/* User Info */}
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
+        <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
           <h2 className="mb-5 text-xl font-semibold text-slate-800">
             User Information
           </h2>
@@ -147,7 +147,7 @@ useEffect(() => {
                 Email
               </p>
 
-              <p className="font-medium">
+              <p className="break-words font-medium">
                 {user?.email}
               </p>
             </div>
@@ -165,7 +165,7 @@ useEffect(() => {
         </div>
 
         {/* Recent Incidents */}
-        <div className="lg:col-span-2 rounded-2xl bg-white p-6 shadow-sm">
+        <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6 lg:col-span-2">
           <h2 className="mb-5 text-xl font-semibold text-slate-800">
             Recent Incidents
           </h2>
@@ -175,7 +175,39 @@ useEffect(() => {
           ) : incidents.length === 0 ? (
             <p>No incidents found.</p>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            <div className="space-y-3 md:hidden">
+              {incidents.map((incident) => (
+                <button
+                  key={incident.id}
+                  type="button"
+                  onClick={() =>
+                    handleIncidentClick(
+                      incident.id
+                    )
+                  }
+                  className="w-full rounded-lg border border-slate-200 p-4 text-left hover:bg-slate-50"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="font-medium text-slate-800">
+                      {incident.title}
+                    </p>
+
+                    <span className="shrink-0 rounded-full bg-green-100 px-3 py-1 text-xs text-green-700">
+                      {incident.status}
+                    </span>
+                  </div>
+
+                  <div className="mt-3">
+                    <span className="rounded-full bg-orange-100 px-3 py-1 text-xs text-orange-700">
+                      {incident.priority}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
@@ -233,6 +265,7 @@ useEffect(() => {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
 

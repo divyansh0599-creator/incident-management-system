@@ -48,11 +48,11 @@ const handleSubmit = async (e) => {
  if (!isOpen) return null;
 
  return (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+  <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4"
    onClick={onClose}>
-    <div className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-xl"
+    <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-4 shadow-xl sm:p-6"
     onClick={(e) => e.stopPropagation()} >
-      <h1 className="mb-6 text-3xl font-bold">
+      <h1 className="mb-5 text-2xl font-bold sm:mb-6 sm:text-3xl">
         Create Incident
       </h1>
 
@@ -127,7 +127,7 @@ const handleSubmit = async (e) => {
     </p>
   )}
 
-  <div className="flex justify-end gap-3">
+  <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
     <button
       type="button"
       onClick={onClose}

@@ -43,9 +43,9 @@ const LoginForm = () => {
 
 
   return (
-    <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900">Sign In</h2>
+    <div className="w-full max-w-md rounded-lg bg-white p-5 shadow-lg sm:p-8">
+      <div className="mb-6 sm:mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">Sign In</h2>
         <p className="mt-2 text-sm text-gray-500">
           Enter your credentials to access the system
         </p>

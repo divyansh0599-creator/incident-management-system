@@ -160,12 +160,12 @@ const handleSave = async () => {
 };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4"
    onClick={onClose}>
-    <div className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-xl"
+    <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-4 shadow-xl sm:p-6"
     onClick={(e) => e.stopPropagation()} >
   <div className="mb-6 flex items-center justify-between">
-    <h2 className="text-2xl font-bold">
+    <h2 className="text-xl font-bold sm:text-2xl">
       Incident Details
     </h2>
 
@@ -193,7 +193,7 @@ const handleSave = async () => {
           Title
         </label>
 
-        <p className="font-medium">
+        <p className="break-words font-medium">
           {incident.title}
         </p>
       </div>
@@ -203,7 +203,7 @@ const handleSave = async () => {
           Description
         </label>
 
-        <p>
+        <p className="break-words">
           {incident.description}
         </p>
       </div>
@@ -293,7 +293,7 @@ const handleSave = async () => {
   </div>
 )}
 
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <button
           onClick={onClose}
           className="rounded-lg border px-4 py-2"
