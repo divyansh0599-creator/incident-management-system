@@ -4,12 +4,18 @@ import { AuthContext } from "../../context/AuthContext";
 
 
 const LoginForm = () => {
+  const demoEmployeeCredentials = {
+    email: "demo.employee@incidentapp.com",
+    password: "Demo@12345",
+  };
 
   const navigate = useNavigate();
 
   const { login } = useContext(AuthContext);
 
   const [error, setError] = useState("");
+  const [demoLoading, setDemoLoading] =
+    useState(false);
 
     const [formData, setFormData] = useState({
     email: "",
@@ -38,6 +44,26 @@ const LoginForm = () => {
       error?.response?.data?.detail ||
       "Login failed"
     );
+  }
+};
+
+const handleDemoEmployeeLogin = async () => {
+  try {
+    setError("");
+    setDemoLoading(true);
+
+    setFormData(demoEmployeeCredentials);
+
+    await login(demoEmployeeCredentials);
+
+    navigate("/dashboard");
+  } catch (error) {
+    setError(
+      error?.response?.data?.detail ||
+      "Demo login failed"
+    );
+  } finally {
+    setDemoLoading(false);
   }
 };
 
@@ -101,6 +127,17 @@ const LoginForm = () => {
           
         >
           Sign In
+        </button>
+
+        <button
+          type="button"
+          onClick={handleDemoEmployeeLogin}
+          disabled={demoLoading}
+          className="w-full rounded-lg border border-slate-300 px-4 py-3 font-medium text-slate-800 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {demoLoading
+            ? "Opening Demo..."
+            : "Login as Demo Employee"}
         </button>
       </form>
     </div>
